@@ -1,0 +1,29 @@
+#lang sicp
+
+(define (adder a b c)
+  (define (process-new-value)
+    (cond ((and (has-value? a1) (has-value? a2))
+           (set-value! c
+                       (+ (get-value a) (get-value b))
+                       me))
+          ((and (has-value? a1) (has-value? sum))
+           (set-value! b
+                       (- (* 2 (get-value c)) (get-value a))
+                       me))
+          ((and (has-value? a2) (has-value? sum))
+           (set-value! a
+                       (- (* (get-value c)) (get-value b))
+                       me))))
+  (define (process-forget-value)
+    (forget-value! c me)
+    (forget-value! a me)
+    (forget-value! b me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value) (process-new-value))
+          ((eq? request 'I-lost-my-value) (process-forget-value))
+          (else (error "Unknown request: ADDER" request))))
+  (connect a me)
+  (connect b me)
+  (connect c me)
+  me)
